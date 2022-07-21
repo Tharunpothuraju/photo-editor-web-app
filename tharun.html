@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="C:\Users\syedt\Desktop\tharun\INTERNSHIP.CSS">
+        <script type="text/javascript">
+        window.onload=function(){
+        ctx.drawImage(img,0,0,300,260);
+        q = ctx.getImageData(0,0,300,260);
+        document.getElementById("inv").addEventListener("click",invert);
+        document.getElementById("whiteblack").addEventListener("click",whiteblack);
+        document.getElementById("rote").addEventListener("click",rote);
+        document.getElementById("lightchange").addEventListener("click",lightchange);
+        document.getElementById("clearbtn").addEventListener("click",clear);
+        document.getElementById("mirror").addEventListener("click",mirror);
+        document.getElementById("coltrns").addEventListener("click",coltrns);
+        }
+        </script>
+    </head>
+    <body>
+        <div id="main" style="padding-bottom:5px" >
+        <div id="canv">
+        <canvas id="myCanvas"></canvas>
+        <img id="image" style="display:none" src="C:\Users\syedt\Desktop\tharun\img.jfif" >
+        </div>
+        <div id="funcs">
+        <div id="f1">
+        <div class="sbm">
+        <button class="sbms" id="inv">Invert</button>
+        <button class="sbms" id="whiteblack">W/B</button>
+        <button class="sbms" id="lightchange">W/B+</button>
+        <button class="sbms" id="coltrns">Dirty</button>
+        </div>
+        <div class="sbm">
+        <button class="sbms" id="mirror">Mirror</button>
+        <button class="sbms" id="trp" onclick="transparent()">Dim</button>
+        </div>
+        <div class="sbm">
+        <button class="sbms" id="rote"><--Rote</button>
+        <button class="sbms" id="rote" onclick="rote2()">Rote--></button>
+        </div>
+        <div class="sbm">
+        <button class="sbms" id="addtext" onclick="addtxt()">Add Text</button>
+        </div>
+        </div>
+        <div id="f2">
+        <button class="men" onclick="menuOpen(0,1,2,3)">&copy;</button>
+        <button class="men" onclick="menuOpen(1,0,2,3)">#</button>
+        <button class="men" onclick="menuOpen(2,1,0,3)">&reg;</button>
+        <button class="men" onclick="menuOpen(3,1,2,0)">+</button>
+        </div>
+        </div>
+        
+        <div>
+            <button id="uploadbtn" onclick="upld()">Upload</button>
+            <button id="clearbtn">Clear</button>
+        </div>
+        
+   
+    </div>
+    
+    <div id="modal" style="display:none;background:#333;position:absolute;"><input type="text" id="uri" placeholder="Paste data URI of your image"><br>
+        <p id="warning">Note: You have to enter the Data URI of your imge. To convert your image to Data URI <a href="https://www.base64-image.de">Click here</a></p>
+        <button onclick="go()" id="submit">Go</button><br>
+        <p style="text-align:center;color:#fff;">or</p>
+        <input type="file" id="files"><label for="files" id="fileuploadbutton">Choose a file...</label>
+        <p id="warning2">Note: SoloLearn app and some browsers doesn't support file uploading</p>
+        <input type="submit" onclick="imgload2()" value="Upload" style="color:#fff; background:rgb(5,225,122); border:none; font-weight:700; padding:5px; font-size:17px; border-radius:3px; margin-top:10px">
+        <br><button id="back" onclick="back()">Back</button>
+        <output id="list"></output>
+    </div>
+    
+    <!--add text-->
+    <input type="submit" value="" id="txt-preview" style="margin:0; padding:0; background:none; border:1px solid #000; visibility:hidden; font-weight:900;">
+    <br>
+    <div id="movebutton">
+    <button onclick="moveTop()" class="moveb" style="transform:rotate(90deg);-moz-transform:rotate(90deg);-ms-transform:rotate(90deg);-webkit-transform:rotate(90deg)"><</button><br>
+    <button onclick="moveLeft()" class="moveb" style="margin-right:20px;"><</button>
+    <button onclick="moveRight()" class="moveb" style="margin-left:20px;">></button><br>
+    <button onclick="moveDown()" class="moveb" style="transform:rotate(270deg);-moz-transform:rotate(270deg);-ms-transform:rotate(270deg);-webkit-transform:rotate(270deg)"><</button><br>
+    <button onclick="cancelTxt()" id="cancelTxt">Cancel</button>
+    <button onclick="attachTxt()" id="attachTxt">Done</button>
+    </div>
+    <div id="txtMenu">
+    <div id="main-text">
+    <span class="txt-title">Enter your TEXT below</span>
+    <input type="text" id="enterTxt" oninput="previewTxt()">
+    </div>
+    <div id="font-color">
+    <span class="txt-title">Text Color</span>
+    <div id="preview">
+    <h3 id="previewcolor" style="text-align:center; padding-top:12px;">rgb(0,0,0);</h3>
+    </div>
+    <input type="range" id="red" min="0" max="255" step="1" value="0" onchange="prevw()" oninput="previewTxt()">
+    <input type="range" id="green" min="0" max="255" step="1" value="0" onchange="prevw()" oninput="previewTxt()">
+    <input type="range" id="blue" min="0" max="255" step="1" value="0" onchange="prevw()" oninput="previewTxt()">
+    </div>
+    <div id="font-size">
+    <span class="txt-title">Font Size</span>
+    <div id="font-size-prev"><h3 id="font-size-prev-text" style="color:#fff; text-align:center; padding-top:4px">20px</h3></div>
+    <input type="range" id="fs" min="15" max="50" step="1" value="20" onchange="fns()" oninput="previewTxt()">
+    </div>
+    <div id="font-family" style="margin:0px 15%; font-size:18px;">
+    <span class="txt-title">Font Style</span>
+    <input type="radio" name="selectstyle" value="filltext" checked="checked">Fill Text<br>
+    <input type="radio" name="selectstyle" value="stroketext">Stroke Text<br>
+    <input type="submit" value="ok" onclick="textsub()" style="display:block;margin:3px auto;background:rgb(0,210,0);color:#fff;border:none;border-radius:2px;height:30px;width:60px;font-size:22px;font-weight:900">
+    </div>
+    </div>
+        <script type="text/javascript">
+        alert("This is a simple photo editor ")
+        alert("If there is any error \nPlease inform me...");
+            var img, c, p, ctx, q;
+            img = document.getElementById("image");
+            c = document.getElementById("myCanvas");
+            ctx = c.getContext("2d");
+            c.width = "300";
+            c.height = "260";
+            function imgload2(){
+                ctx.drawImage(im,0,0,300,260);
+                q = ctx.getImageData(0,0,300,260);
+                document.getElementById("modal").style.display="none";
+                document.getElementById("inv").addEventListener("click",invert);
+                document.getElementById("whiteblack").addEventListener("click",whiteblack);
+                document.getElementById("rote").addEventListener("click",rote);
+                document.getElementById("lightchange").addEventListener("click",lightchange);
+                document.getElementById("clr").addEventListener("click",clear);
+                document.getElementById("mirror").addEventListener("click",mirror);
+                document.getElementById("coltrns").addEventListener("click",coltrns);
+            }
+
+            function whiteblack(){
+                p = ctx.getImageData(0,0,300,260);
+                for(i=0;i<(260*1200);i+=4){
+                    var g = (p.data[i]+p.data[i+1]+p.data[i+2])/3;
+                    p.data[i]= g;
+                    p.data[i+1]= g;
+                    p.data[i+2]= g
+                }
+                ctx.putImageData(p,0,0);
+            }
+            
+            function clear(){
+                ctx.putImageData(q,0,0);
+                c.style.transform="rotate(0deg)";
+                c.style.mozTransform="rotate(0deg)";
+                c.style.webkitTransform="rotate(0deg)";
+                c.style.msTransform="rotate(0deg)";
+            }
+            
+            function invert(){
+            p = ctx.getImageData(0,0,300,260);
+            for(i=0;i<(260*1200);i+=4){
+                p.data[i]= 255-p.data[i];
+                p.data[i+1]= 255-p.data[i+1];
+                p.data[i+2]= 255-p.data[i+2];
+            }
+            ctx.putImageData(p,0,0);
+            }
+            
+            var rt=0;
+            function rote(){
+                rt+=90;
+                c.style.transform="rotate("+rt+"deg)";
+                c.style.mozTransform="rotate("+rt+"deg)";
+                c.style.webkitTransform="rotate("+rt+"deg)";
+                c.style.msTransform="rotate("+rt+"deg)";
+            }
+            
+            function rote2(){
+            rt-=90;
+            c.style.transform="rotate("+rt+"deg)";
+            c.style.mozTransform="rotate("+rt+"deg)";
+            c.style.webkitTransform="rotate("+rt+"deg)";
+            c.style.msTransform="rotate("+rt+"deg)";
+            }
+            
+            function lightchange(){
+                p = ctx.getImageData(0,0,300,260);
+                for(i=0;i<(260*1200);i+=4){
+                    p.data[i]=(p.data[i]+p.data[i+1]+p.data[i+2])/3;
+                    p.data[i+1]=(p.data[i]+p.data[i+1]+p.data[i+2])/3;
+                    p.data[i+2]=(p.data[i]+p.data[i+1]+p.data[i+2])/3;
+                }
+                ctx.putImageData(p,0,0);
+            }
+            
+            function mirror(){
+                for(i=0;i<150;i++){
+                    var r1=ctx.getImageData(i,0,1,260);
+                    var r2=ctx.getImageData((300-i),0,1,260);
+                    ctx.putImageData(r1,(300-i),0);
+                    ctx.putImageData(r2,i,0);
+                }
+            }
+            
+            function coltrns(){
+                var ct = ctx.getImageData(0,0,300,260);
+                for(i=0;i<(1200*260);i+=4){
+                    if(ct.data[i]>200){
+                        ct.data[i]=0;
+                    }
+                }
+                ctx.putImageData(ct,0,0);
+                
+            }
+            
+            function transparent(){
+                var tr = ctx.getImageData(0,0,300,260);
+                for(i=0;i<(1200*260);i+=4){
+                    tr.data[i]=(tr.data[i-8]+tr.data[i+4]+tr.data[i]+tr.data[i+4]+tr.data[i+8]+tr.data[i+12])/6;
+                    tr.data[i+1]=(tr.data[i-7]+tr.data[i-3]+tr.data[i+1]+tr.data[i+5]+tr.data[i+9]+tr.data[i+13])/6;
+                    tr.data[i+2]=(tr.data[i-6]+tr.data[i-2]+tr.data[i+2]+tr.data[i+6]+tr.data[i+10]+tr.data[i+14])/6;
+                }
+            
+            ctx.putImageData(tr,0,0);
+            
+            }
+            
+            function addtxt(){
+                document.getElementById("txtMenu").style.display="block";
+            }
+            
+            function handleFileSelect(evt)
+            {
+            var files = evt.target.files;
+            for (var i = 0; f = files[i]; i++)
+            {
+            var reader = new FileReader();
+            reader.onload = (function(theFile)
+            {
+            return function(e)
+            {
+            var span = document.createElement('span');
+            span.innerHTML = ['<img id="im" style="display:none" src="', e.target.result, '" title="', escape(theFile.name), '"/>'].join('');
+            document.getElementById('list').insertBefore(span, null);
+            };
+            })(f);
+            reader.readAsDataURL(f);
+            }
+            }
+            document.getElementById('files').addEventListener('change', handleFileSelect, false);
+            
+            function menuOpen(i,j,k,l){
+                var tk=document.getElementsByClassName("sbm");
+                var mn=document.getElementsByClassName("men");
+                tk[i].style.display="block";
+                tk[j].style.display="none";
+                tk[k].style.display="none";
+                tk[l].style.display="none";
+                mn[i].style.background="-webkit-linear-gradient(left, #ec0040,#ec0040,#fd4d73,#fd4d73)";
+                mn[j].style.background="-webkit-linear-gradient(left, #1c89f2,#1c89f2,#0269c5,#0269c5)";
+                mn[k].style.background="-webkit-linear-gradient(left, #1c89f2,#1c89f2,#0269c5,#0269c5)";
+                mn[l].style.background="-webkit-linear-gradient(left, #1c89f2,#1c89f2,#0269c5,#0269c5)";
+            }
+            
+            //add text
+            var txtmenu=document.getElementById("txtMenu");
+            var maindiv=document.getElementById("main");
+            var movebtn=document.getElementById("movebutton");
+            movebtn.style.width=(maindiv.offsetWidth-10)+"px";
+            movebtn.style.left=maindiv.offsetLeft+"px";
+            movebtn.style.top=document.getElementById("funcs").offsetTop+"px";
+            txtmenu.style.width=(maindiv.offsetWidth-5)+"px";
+            txtmenu.style.top=maindiv.offsetTop+"px";
+            txtmenu.style.left=maindiv.offsetLeft+"px";
+            txtmenu.style.top
+            var txtPreview=document.getElementById("txt-preview");
+            txtPreview.style.top=c.offsetTop+"px";
+            txtPreview.style.left=c.offsetLeft+"px";
+            var txtSize;
+            var txtColor;
+            var fst;
+            var enterTxt=document.getElementById("enterTxt");
+            function previewTxt(){
+            var r,g,b;
+            r=document.getElementById("red").value;
+            g=document.getElementById("green").value;
+            b=document.getElementById("blue").value;
+            txtColor="rgb("+r+","+g+","+b+")";
+            txtSize=document.getElementById("fs").value;
+            txtPreview.value=enterTxt.value;
+            txtPreview.style.fontSize=txtSize+"px";
+            txtPreview.style.color=txtColor;
+            txtPreview.style.visibility="visible";
+            }
+            var tp=txtPreview.offsetTop;
+            var lf=txtPreview.offsetLeft;
+            function moveDown(){
+            tp+=10;
+            txtPreview.style.top=tp+"px";
+            }
+            function moveTop(){
+            tp-=10;
+            txtPreview.style.top=tp+"px";
+            }
+            function moveLeft(){
+            lf-=10;
+            txtPreview.style.left=lf+"px";
+            }
+            function moveRight(){
+            lf+=10;
+            txtPreview.style.left=lf+"px";
+            }
+            function attachTxt(){
+            ctx.font="bold "+txtSize+"px Arial";
+            if(fst=="filltext"){
+            ctx.fillStyle=txtColor;
+            ctx.fillText(txtPreview.value,lf-c.offsetLeft,tp-c.offsetTop+txtSize*1);
+            }
+            else{
+            ctx.strokeStyle=txtColor;
+            ctx.strokeText(txtPreview.value,lf-c.offsetLeft,tp-c.offsetTop+txtSize*1);
+            }
+            txtPreview.style.visibility="hidden";
+            document.getElementById("movebutton").style.display="none";
+            }
+            
+            function cancelTxt(){
+                txtPreview.style.visibility="hidden";
+                document.getElementById("movebutton").style.display="none";
+            }
+            
+            var r,g,b,pv;
+            function prevw(){
+            r=document.getElementById("red").value;
+            g=document.getElementById("green").value;
+            b=document.getElementById("blue").value;
+            pv=document.getElementById("preview");
+            pv.style.background="rgb("+r+","+g+","+b+")";
+            document.getElementById("previewcolor").innerHTML="rgb("+r+","+g+","+b+")";
+            }
+            
+            var fsize;
+            function fns(){
+            fsize=document.getElementById("fs").value;
+            document.getElementById("font-size-prev-text").innerHTML=fsize+"px";
+            }
+            
+            function textsub(){
+            var radios = document.getElementsByName('selectstyle');
+            for (var i = 0, length = radios.length; i < length; i++) {
+            if (radios[i].checked) {
+            fst=radios[i].value;
+            break;
+            }
+            }
+            document.getElementById("txtMenu").style.display="none";
+            document.getElementById("movebutton").style.display="block";
+            txtPreview.style.visibility="visible";
+            }    
+            function upld(){
+                var modal=document.getElementById("modal");
+                modal.style.display="block";
+                modal.style.width=maindiv.offsetWidth+"px";
+                modal.style.top=maindiv.offsetTop+"px";
+                modal.style.left=maindiv.offsetLeft+"px";
+                modal.style.height=maindiv.offsetHeight+"px";
+            }
+            
+            function back(){
+                document.getElementById("modal").style.display="none";
+            }
+            
+            function go(){
+            var uri=document.getElementById("uri").value;
+            img.src=uri;
+            ctx.drawImage(img,0,0,300,260);
+            document.getElementById("modal").style.display="none";
+            }
+        </script>
+    </body>
+</html>
